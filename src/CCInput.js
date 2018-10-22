@@ -7,11 +7,18 @@ import {
   TouchableOpacity,
   StyleSheet,
   ViewPropTypes,
+  Image,
 } from "react-native";
+import Icons from "./Icons";
 
 const s = StyleSheet.create({
   baseInputStyle: {
     color: "black",
+  },
+  icon: {
+    width: 48,
+    height: 40,
+    resizeMode: "contain",
   },
 });
 
@@ -66,16 +73,25 @@ export default class CCInput extends Component {
   _onFocus = () => this.props.onFocus(this.props.field);
   _onChange = value => this.props.onChange(this.props.field, value);
 
+  _iconToShow = () => {
+    const { values: { type } } = this.props;
+    if (type === "american-express") return "cvc_amex";
+    if (type) return type;
+    return "placeholder";
+  }
+
   render() {
     const { label, value, placeholder, status, keyboardType,
             containerStyle, inputStyle, labelStyle,
             validColor, invalidColor, placeholderColor,
-            additionalInputProps } = this.props;
+            additionalInputProps,creditCard, justifyContent } = this.props;
     return (
       <TouchableOpacity onPress={this.focus}
         activeOpacity={0.99}>
         <View style={[containerStyle]}>
           { !!label && <Text style={[labelStyle]}>{label}</Text>}
+          <View style={{justifyContent, flexDirection: 'row'}}>
+          {creditCard && <Image style={s.icon} source={Icons[this._iconToShow()]} />}
           <TextInput ref="input"
             {...additionalInputProps}
             keyboardType={keyboardType}
@@ -94,6 +110,7 @@ export default class CCInput extends Component {
             value={value}
             onFocus={this._onFocus}
             onChangeText={this._onChange} />
+            </View>
         </View>
       </TouchableOpacity>
     );
